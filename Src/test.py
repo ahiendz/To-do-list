@@ -18,6 +18,12 @@ class Signin(QMainWindow):
 
         if Username_or_email == "ahiendz" and Password == "huhu18072011":
             self.main_window.show()
+
+        elif Username_or_email == "" or Password == "":
+            self.msg_box.setText("Dont leave any field empty")
+            self.msg_box.setIcon(QMessageBox.Icon.Warning)
+            self.msg_box.exec()
+
         else:
             self.msg_box.setText("Username or password is incorrect")
             self.msg_box.setIcon(QMessageBox.Icon.Warning)
