@@ -300,6 +300,13 @@ font: 12pt &quot;MS Shell Dlg 2&quot;;</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>Username_or_email_address</tabstop>
+  <tabstop>password</tabstop>
+  <tabstop>Username</tabstop>
+  <tabstop>Sign_up</tabstop>
+  <tabstop>Sign_in</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

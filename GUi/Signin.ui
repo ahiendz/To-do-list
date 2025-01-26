@@ -248,7 +248,6 @@ font: 12pt &quot;MS Shell Dlg 2&quot;;</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
