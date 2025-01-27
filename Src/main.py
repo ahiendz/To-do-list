@@ -23,6 +23,7 @@ class SignInWindow(QMainWindow):
         # Gắn sự kiện cho các nút bấm
         self.sign_in_button.clicked.connect(self.validate_login)
         self.switch_to_signup_button.clicked.connect(self.open_signup_window)
+        self.closebtt.clicked.connect(self.close)
 
     def validate_login(self):
         """Xử lý logic đăng nhập."""
@@ -69,6 +70,7 @@ class SignUpWindow(QMainWindow):
         # Gắn sự kiện cho các nút bấm
         self.sign_up_button.clicked.connect(self.process_signup)
         self.switch_to_signin_button.clicked.connect(self.open_signin_window)
+        self.closebtt.clicked.connect(self.close)
 
     def process_signup(self):
         """Xử lý logic đăng ký."""

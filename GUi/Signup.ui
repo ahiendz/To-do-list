@@ -296,6 +296,23 @@ font: 12pt &quot;MS Shell Dlg 2&quot;;</string>
       <string>Sign in</string>
      </property>
     </widget>
+    <widget class="QToolButton" name="closebtt">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>20</y>
+       <width>30</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../../../Downloads/close.png</normaloff>../../../../../../Downloads/close.png</iconset>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
