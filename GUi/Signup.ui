@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>801</width>
-    <height>662</height>
+    <width>391</width>
+    <height>531</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>10</y>
+      <x>0</x>
+      <y>0</y>
       <width>391</width>
       <height>531</height>
      </rect>
@@ -94,7 +94,7 @@ font: 75 10pt &quot;MS Shell Dlg 2&quot;;
 </string>
       </property>
       <property name="text">
-       <string>Username or email</string>
+       <string>Email</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -116,7 +116,7 @@ font: 75 10pt &quot;MS Shell Dlg 2&quot;;
        <string>Password</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Username_or_email_address">
+     <widget class="QLineEdit" name="email_input">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -144,7 +144,7 @@ QLineEdit:focus {
        <string/>
       </property>
      </widget>
-     <widget class="QLineEdit" name="password">
+     <widget class="QLineEdit" name="password_input">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -175,7 +175,7 @@ QLineEdit:focus {
        <enum>QLineEdit::Password</enum>
       </property>
      </widget>
-     <widget class="QPushButton" name="Sign_up">
+     <widget class="QPushButton" name="sign_up_button">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -225,7 +225,7 @@ font: 75 10pt &quot;MS Shell Dlg 2&quot;;
        <string>Username</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Username">
+     <widget class="QLineEdit" name="username_input">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -276,7 +276,7 @@ font: 75 10pt &quot;MS Shell Dlg 2&quot;;
       <string>Already have an account?</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="Sign_in">
+    <widget class="QPushButton" name="switch_to_signin_button">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -298,14 +298,13 @@ font: 12pt &quot;MS Shell Dlg 2&quot;;</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <tabstops>
-  <tabstop>Username_or_email_address</tabstop>
-  <tabstop>password</tabstop>
-  <tabstop>Username</tabstop>
-  <tabstop>Sign_up</tabstop>
-  <tabstop>Sign_in</tabstop>
+  <tabstop>email_input</tabstop>
+  <tabstop>password_input</tabstop>
+  <tabstop>username_input</tabstop>
+  <tabstop>sign_up_button</tabstop>
+  <tabstop>switch_to_signin_button</tabstop>
  </tabstops>
  <resources/>
  <connections/>
