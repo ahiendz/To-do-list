@@ -28,7 +28,40 @@
 color: rgb(255, 0, 0)</string>
     </property>
     <property name="text">
-     <string>MAIN</string>
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../../../Downloads/close.svg</pixmap>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>20</y>
+      <width>15</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: transparent;
+    border: none;
+    color: #1F2328;
+    font-size: 16px;
+    font-weight: bold;
+
+}
+QPushButton:hover {
+    color: darkred;
+}</string>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+    <property name="icon">
+     <iconset theme="X">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
   </widget>

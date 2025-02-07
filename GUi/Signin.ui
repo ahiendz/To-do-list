@@ -94,7 +94,7 @@ font: 75 10pt &quot;MS Shell Dlg 2&quot;;
 </string>
       </property>
       <property name="text">
-       <string>Username or email</string>
+       <string>Email</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">

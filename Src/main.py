@@ -2,6 +2,9 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 import sys
+import csv
+import re
+
 
 # 1. Lớp Signin (Đăng nhập)
 class SignInWindow(QMainWindow):
@@ -30,15 +33,22 @@ class SignInWindow(QMainWindow):
         username_or_email = self.username_or_email_input.text()
         password = self.password_input.text()
 
-        if username_or_email == "ahiendz" and password == "huhu18072011":
-            self.main_window.show()  # Hiển thị cửa sổ chính
-            self.close()
-
-        elif not username_or_email or not password:
+        if not username_or_email or not password:
             self.show_message("Không được để trống trường nào.", QMessageBox.Icon.Warning)
-
         else:
-            self.show_message("Tên đăng nhập hoặc mật khẩu không đúng.", QMessageBox.Icon.Warning)
+            check = True
+            with open('DATA.csv') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if row[0] == username_or_email and row[1] == password:
+                        check = False
+                        self.main_window.show()
+                        self.close()
+            if check:
+                self.show_message("Tk/Mk sai", QMessageBox.Icon.Warning)
+                
+
+    
 
     def open_signup_window(self):
         """Mở cửa sổ đăng ký."""
@@ -74,14 +84,25 @@ class SignUpWindow(QMainWindow):
 
     def process_signup(self):
         """Xử lý logic đăng ký."""
+
         email = self.email_input.text()
         password = self.password_input.text()
         username = self.username_input.text()
 
         if not email or not password or not username:
             self.show_message("Không được để trống trường nào.", QMessageBox.Icon.Warning)
+        elif not "@gmail.com" in email:
+            self.show_message("Email khong hop le", QMessageBox.Icon.Warning)
+        elif (not any(char.isupper() for char in password) or not any(char.islower() for char in password) or not any(char.isdigit() for char in password) or not any(char in '[@_!#$%^&*()<>?/|}{~:]' for char in password) or len(password) > 20):  
+            self.show_message("Password khong hop le", QMessageBox.Icon.Warning)
+        elif (not any(char.isupper() for char in username) or not any(char.islower() for char in username) or not any(char.isdigit() for char in username) or not any(char in '[@_!#$%^&*()<>?/|}{~:]' for char in username) or len(username) > 10):  
+            self.show_message("Username khong hop le", QMessageBox.Icon.Warning)
         else:
-            self.show_message("Đăng ký thành công (logic lưu trữ cần được bổ sung).", QMessageBox.Icon.Information)
+            with open("DATA.csv", mode="a",newline='') as data:
+                writer =  csv.writer(data)
+                writer.writerow([email,password,username])
+                print([email,password,username])
+
 
     def open_signin_window(self):
         """Mở cửa sổ đăng nhập."""
