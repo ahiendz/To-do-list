@@ -3,8 +3,10 @@ from PyQt6 import uic
 from PyQt6.QtCore import Qt
 import sys
 import csv
-import re
-
+import uuid
+import csv
+import os
+import json
 
 # 1. Lớp Signin (Đăng nhập)
 class SignInWindow(QMainWindow):
@@ -36,14 +38,21 @@ class SignInWindow(QMainWindow):
         if not username_or_email or not password:
             self.show_message("Không được để trống trường nào.", QMessageBox.Icon.Warning)
         else:
+            def read_data():
+                try:
+                    with open("DATA.json", "r") as infile:
+                        return json.load(infile)
+                except (json.JSONDecodeError, FileNotFoundError):
+                    return {"users": []}
+
+            data = read_data()
             check = True
-            with open('DATA.csv') as f:
-                reader = csv.reader(f)
-                for row in reader:
-                    if row[0] == username_or_email and row[1] == password:
-                        check = False
-                        self.main_window.show()
-                        self.close()
+            for user in data["users"]:
+                if (user["username"] == username_or_email or user["email"] == username_or_email) and user["password"] == password:
+                    check = False
+                    self.main_window.show()
+                    self.close()
+                    break
             if check:
                 self.show_message("Tk/Mk sai", QMessageBox.Icon.Warning)
                 
@@ -93,17 +102,39 @@ class SignUpWindow(QMainWindow):
             self.show_message("Không được để trống trường nào.", QMessageBox.Icon.Warning)
         elif not "@gmail.com" in email:
             self.show_message("Email khong hop le", QMessageBox.Icon.Warning)
-        elif (not any(char.isupper() for char in password) or not any(char.islower() for char in password) or not any(char.isdigit() for char in password) or not any(char in '[@_!#$%^&*()<>?/|}{~:]' for char in password) or len(password) > 20):  
+        elif (not any(char.isupper() for char in password) or not any(char.islower() for char in password) or not any(char.isdigit() for char in password) or not any(char in '[@_!#$%^&*()<>?/|}{~:]' for char in password) or len(password) > 50):  
             self.show_message("Password khong hop le", QMessageBox.Icon.Warning)
-        elif (not any(char.isupper() for char in username) or not any(char.islower() for char in username) or not any(char.isdigit() for char in username) or not any(char in '[@_!#$%^&*()<>?/|}{~:]' for char in username) or len(username) > 10):  
+        elif (not any(char.isupper() for char in username) or not any(char.islower() for char in username) or not any(char.isdigit() for char in username) or not any(char in '[@_!#$%^&*()<>?/|}{~:]' for char in username) or len(username) > 20):  
             self.show_message("Username khong hop le", QMessageBox.Icon.Warning)
         else:
-            with open("DATA.csv", mode="a",newline='') as data:
-                writer =  csv.writer(data)
-                writer.writerow([email,password,username])
-                print([email,password,username])
+            def write_to_json(username, email, password):
+                def read_data():
+                    with open("DATA.json", "r") as infile:
+                        return json.load(infile)
 
+                def write_data(data):
+                    with open("DATA.json", "w") as outfile:
+                        json.dump(data, outfile, indent=4)
 
+                def add_user(username, email, password):
+                    data = read_data()
+                    new_user = {
+                        "username": username,
+                        "email": email,
+                        "password": password,
+                        "tasks": []
+                    }
+                    data["users"].append(new_user)
+                    write_data(data)
+
+                add_user(username, email, password)
+
+            write_to_json(username, email, password)
+
+            self.show_message("Tao TK Thanh Cong!", QMessageBox.Icon.Information)
+            self.signin_window.show()
+            self.close()
+            
     def open_signin_window(self):
         """Mở cửa sổ đăng nhập."""
         self.signin_window.show()
@@ -119,7 +150,42 @@ class SignUpWindow(QMainWindow):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi(r"GUi/Main.ui", self)
+        try:
+            uic.loadUi(r"GUi\Main\Main.ui", self)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to load UI: {e}")
+
+
+        # Connect buttons to their respective functions
+        self.Myday.clicked.connect(lambda: self.switch_page(0))
+        self.Important.clicked.connect(lambda: self.switch_page(1))
+        self.Planned.clicked.connect(lambda: self.switch_page(2))
+        self.Task.clicked.connect(lambda: self.switch_page(3))
+        self.Groceries.clicked.connect(lambda: self.switch_page(4))
+
+        self.btn_addTask.clicked.connect(self.add_task)
+        self.btn_removeTask.clicked.connect(self.remove_task)
+
+    def switch_page(self, index):
+        print("Switching to page", index)
+        self.stackedWidget.setCurrentIndex(index)
+
+    def add_task(self):
+        task_text = self.lineEdit_newTask.text()
+        if task_text.strip():
+            self.listWidget_tasks.addItem(task_text)
+            self.lineEdit_newTask.clear()  # Clear the input field after adding
+        else:
+            QMessageBox.warning(self, "Warning", "Task cannot be empty.")
+
+    def remove_task(self):
+        selected_items = self.listWidget_tasks.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Warning", "Please select a task to remove.")
+            return
+        for item in selected_items:
+            self.listWidget_tasks.takeItem(self.listWidget_tasks.row(item))  # Remove selected item
+
 
 # 4. Hàm khởi chạy ứng dụng
 if __name__ == "__main__":
