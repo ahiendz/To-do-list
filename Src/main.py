@@ -25,6 +25,10 @@ class SignInWindow(QMainWindow):
         # Hộp thoại thông báo
         self.message_box = QMessageBox()
 
+        # Khởi tạo biến user và email hiện tại
+        self.current_user = None
+        self.current_email = None
+
         # Gắn sự kiện cho các nút bấm
         self.sign_in_button.clicked.connect(self.validate_login)
         self.switch_to_signup_button.clicked.connect(self.open_signup_window)
@@ -40,20 +44,24 @@ class SignInWindow(QMainWindow):
         else:
             def read_data():
                 try:
-                    with open("DATA.json", "r") as infile:
+                    with open("MULTI_USER_DATA.json", "r") as infile:
                         return json.load(infile)
                 except (json.JSONDecodeError, FileNotFoundError):
                     return {"users": []}
 
             data = read_data()
-            check = True
+            user_found = None
             for user in data["users"]:
                 if (user["username"] == username_or_email or user["email"] == username_or_email) and user["password"] == password:
-                    check = False
-                    self.main_window.show()
-                    self.close()
+                    user_found = user
                     break
-            if check:
+            
+            if user_found:
+                self.current_user = user_found["username"]
+                self.main_window.set_user(self.current_user)
+                self.main_window.show()
+                
+            else:
                 self.show_message("Tk/Mk sai", QMessageBox.Icon.Warning)
 
     def open_signup_window(self):
@@ -106,11 +114,11 @@ class SignUpWindow(QMainWindow):
         else:
             def write_to_json(username, email, password):
                 def read_data():
-                    with open("DATA.json", "r") as infile:
+                    with open("MULTI_USER_DATA.json", "r") as infile:
                         return json.load(infile)
 
                 def write_data(data):
-                    with open("DATA.json", "w") as outfile:
+                    with open("MULTI_USER_DATA.json", "w") as outfile:
                         json.dump(data, outfile, indent=4)
 
                 def add_user(username, email, password):
@@ -167,9 +175,10 @@ class TaskDialog(QDialog):
 
 # Lớp MainWindow (sử dụng đúng tên object từ UI)
 class MainWindow(QMainWindow):
-    def __init__(self, username):
+    def __init__(self):
         super().__init__()
-        self.username = username
+        self.username = None
+        self.email = None
         self.tasks = []
 
         # Load UI và kết nối object theo tên
@@ -179,8 +188,6 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", f"Failed to load UI: {e}")
             sys.exit()
 
-        self.QLabelUsername.setText(f"Welcome, {self.username}!")
-
         # Kết nối sự kiện với đúng tên object
         self.lineEdit_newTask.returnPressed.connect(self.add_task)  # QLineEdit
         self.btn_toggle_completed.clicked.connect(self.toggle_completed)  # QToolButton
@@ -188,12 +195,17 @@ class MainWindow(QMainWindow):
         self.listWidget_tasks.itemChanged.connect(self.handle_task_completion)  # Xử lý checkbox
         self.btn_delete_all.clicked.connect(self.delete_all_completed_tasks)
 
-        # Khởi tạo dữ liệu
-        self.load_or_create_user()
-        self.load_tasks()
-
         self.listWidget_completed.setVisible(False)
         self.btn_delete_all.setVisible(False)
+
+    def set_user(self, username):
+            """Cập nhật thông tin user sau khi đăng nhập"""
+            self.username = username
+            self.QLabelUsername.setText(f"Welcome, {self.username}!")
+
+            # Tải dữ liệu và task của user
+            self.load_data()
+            self.load_tasks()
 
     # Thêm task mới
     def add_task(self):
@@ -274,29 +286,22 @@ class MainWindow(QMainWindow):
         self.save_data()
 
     # ======== CẢI TIẾN PHƯƠNG THỨC XỬ LÝ USER ========
-    def load_or_create_user(self):
+    def load_data(self):
         # Đọc dữ liệu
         with open("MULTI_USER_DATA.json", "r") as f:
-            data = json.load(f)
-            user_exists = False
-            
+            data = json.load(f)            
+            print("Data loaded:", data)  # Kiểm tra dữ liệu
             # Tìm user
+            
+            print("Current user:", self.username)
             for user in data["users"]:
                 if user["username"] == self.username:
+                    print("Current user data:", user)  # Xem user có tồn tại không
                     self.tasks = user.get("tasks", [])
-                    user_exists = True
+                    print("Tasks loaded:", self.tasks)  # Kiểm tra xem có load được không
                     break
-            
-            # Tạo user mới nếu không tồn tại
-            if not user_exists:
-                new_user = {
-                    "username": self.username,
-                    "tasks": []
-                }
-                data["users"].append(new_user)
-                with open("MULTI_USER_DATA.json", "w") as f:
-                    json.dump(data, f, indent=4)
-                self.tasks = []
+                else:
+                    print("User not found")
 
     def save_data(self):
         with open("MULTI_USER_DATA.json", "r+") as f:
@@ -330,7 +335,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # Tạo các cửa sổ
-    main_window = MainWindow(username="ahiendzzzzz")
+    main_window = MainWindow()
     signin_window = SignInWindow(None, main_window)
     signup_window = SignUpWindow(signin_window)
 
