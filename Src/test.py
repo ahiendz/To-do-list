@@ -173,6 +173,8 @@ class MainWindow(QMainWindow):
 
             self.qline_add_task.clear()
 
+        main_window.load_tasks()
+
     # Xử lý task hoàn thành
     def handle_task_completion(self, item):
         if item.checkState() == Qt.CheckState.Checked:
@@ -180,12 +182,12 @@ class MainWindow(QMainWindow):
             for task in self.tasks:
                 if task["text"] == item.text():
                     task["completed"] = True
-                    self.listWidget_completed.addItem(item.text())
-                    self.listWidget_tasks.takeItem(self.listWidget_tasks.row(item))
+                    break
             self.save_data()
 
     # Thu gọn/mở rộng Completed
     def toggle_completed(self):
+        
         is_visible = self.listWidget_completed.isVisible()
         self.listWidget_completed.setVisible(not is_visible)
         self.btn_delete_all.setVisible(not is_visible)
@@ -262,36 +264,68 @@ class MainWindow(QMainWindow):
             f.seek(0)
             json.dump(data, f, indent=4)
             f.truncate()
+        main_window.load_tasks()
 
     # Tải task vào UI
     def load_tasks(self):
-        for task in self.tasks:
-            item = QListWidgetItem(task["text"])
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-            
-            if task["completed"]:
-                print(task["text"], "completed")
-                item.setCheckState(Qt.CheckState.Checked)
-                self.listWidget_completed_Task.addItem(item)
-                if task["important"]:
-                    self.listWidget_completed_Important.addItem(item)
-                if task["is_planned"]:
-                    self.listWidget_completed_Planned.addItem(item)
-                if task["day"] == QDate.currentDate().toString("yyyy-MM-dd"):
-                    self.listWidget_completed_Myday.addItem(item)
-            else:
-                print(task["text"], "not completed")
-                item.setCheckState(Qt.CheckState.Unchecked)
-                self.listWidget_Task.addItem(item)
-                if task["important"]:
-                    item.setForeground(QColor("red"))
-                    self.listWidget_Important.addItem(item)
-                    print("Da them vao Important")
-                if task["is_planned"]:
-                    self.listWidget_Planned.addItem(item)
-                if task["day"] == QDate.currentDate().toString("yyyy-MM-dd"):
-                    self.listWidget_Myday.addItem(item)
+        self.listWidget_Task.clear()
+        self.listWidget_Important.clear()
+        self.listWidget_Planned.clear()
+        self.listWidget_Myday.clear()
+        self.listWidget_completed_Task.clear()
+        self.listWidget_completed_Important.clear()
+        self.listWidget_completed_Planned.clear()
+        self.listWidget_completed_Myday.clear()
 
+        for task in self.tasks:
+
+            # Tạo một QListWidgetItem mới cho mỗi danh sách
+            item_task = QListWidgetItem(task["text"])
+            item_task.setFlags(item_task.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            
+            item_myday = QListWidgetItem(task["text"])
+            item_myday.setFlags(item_myday.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+
+            item_important = QListWidgetItem(task["text"])
+            item_important.setFlags(item_important.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+
+            item_planned = QListWidgetItem(task["text"])
+            item_planned.setFlags(item_planned.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+
+            # Thiết lập trạng thái checked/unchecked dựa trên thuộc tính completed
+            if task["completed"]:
+                item_task.setCheckState(Qt.CheckState.Checked)
+                item_myday.setCheckState(Qt.CheckState.Checked)
+                item_important.setCheckState(Qt.CheckState.Checked)
+                item_planned.setCheckState(Qt.CheckState.Checked)
+            else:
+                item_task.setCheckState(Qt.CheckState.Unchecked)
+                item_myday.setCheckState(Qt.CheckState.Unchecked)
+                item_important.setCheckState(Qt.CheckState.Unchecked)
+                item_planned.setCheckState(Qt.CheckState.Unchecked)
+
+            if task["completed"]:
+                self.listWidget_completed_Task.addItem(item_task)
+            else:
+                self.listWidget_Task.addItem(item_task)
+
+            if task["day"] == QDate.currentDate().toString("yyyy-MM-dd"):
+                if task["completed"]:
+                    self.listWidget_completed_Myday.addItem(item_myday)
+                else:
+                    self.listWidget_Myday.addItem(item_myday)
+
+            if task["important"]:
+                if task["completed"]:
+                    self.listWidget_completed_Important.addItem(item_important)
+                else:
+                    self.listWidget_Important.addItem(item_important)
+
+            if task["is_planned"]:
+                if task["completed"]:
+                    self.listWidget_completed_Planned.addItem(item_planned)
+                else:
+                    self.listWidget_Planned.addItem(item_planned)
 
 # 4. Hàm khởi chạy ứng dụng
 if __name__ == "__main__":
