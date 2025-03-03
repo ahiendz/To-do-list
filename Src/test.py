@@ -1,14 +1,11 @@
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QListWidgetItem, QDialog,
-    QVBoxLayout, QLabel, QPushButton, QMessageBox, QDateEdit,
-    QLineEdit, QListWidget, QGroupBox, QToolButton
+    QApplication, QMainWindow, QMessageBox, QVBoxLayout, QLabel, QPushButton, QDialog, QListWidgetItem, QListWidget, QDateEdit
 )
+from PyQt6 import uic
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QColor
-from PyQt6 import uic
-import json
-from pathlib import Path
 import sys
+import json
 
 # Lớp Dialog cho tùy chọn task
 class TaskDialog(QDialog):
@@ -32,49 +29,149 @@ class TaskDialog(QDialog):
         
         self.setLayout(layout)
 
-# Lớp MainWindow (sử dụng đúng tên object từ UI)
 class MainWindow(QMainWindow):
-    def __init__(self, username):
+    def __init__(self):
         super().__init__()
-        self.username = username
+        self.username = None
+        self.email = None
         self.tasks = []
 
-        # Load UI và kết nối object theo tên
-        try:
-            uic.loadUi(r"GUi\Tesst.ui", self)  # Đảm bảo file UI có đúng tên object
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to load UI: {e}")
-            sys.exit()
+        uic.loadUi(r"GUi\PHATRIENMAINui.ui", self)
 
-        # Kết nối sự kiện với đúng tên object
-        self.lineEdit_newTask.returnPressed.connect(self.add_task)  # QLineEdit
-        self.btn_toggle_completed.clicked.connect(self.toggle_completed)  # QToolButton
-        self.listWidget_tasks.itemDoubleClicked.connect(self.open_task_dialog)  # QListWidget
-        self.listWidget_tasks.itemChanged.connect(self.handle_task_completion)  # Xử lý checkbox
+        self.qline_add_task.returnPressed.connect(self.add_task)
 
-        # Khởi tạo dữ liệu
-        self.load_data()
-        self.load_tasks()
+        self.btn_toggle_completed_Myday.clicked.connect(self.toggle_completed)
+        self.btn_toggle_completed_Important.clicked.connect(self.toggle_completed)
+        self.btn_toggle_completed_Planned.clicked.connect(self.toggle_completed)
+        self.btn_toggle_completed_Task.clicked.connect(self.toggle_completed)
+        self.btn_toggle_completed_Groceries.clicked.connect(self.toggle_completed)
 
-        self.listWidget_completed.setVisible(False)
+
+        self.listWidget_Myday.itemDoubleClicked.connect(self.open_task_dialog)
+        self.listWidget_Important.itemDoubleClicked.connect(self.open_task_dialog)
+        self.listWidget_Planned.itemDoubleClicked.connect(self.open_task_dialog)
+        self.listWidget_Task.itemDoubleClicked.connect(self.open_task_dialog)
+        self.listWidget_Groceries.itemDoubleClicked.connect(self.open_task_dialog)
+
+        self.listWidget_Myday.itemChanged.connect(self.handle_task_completion)
+        self.listWidget_Important.itemChanged.connect(self.handle_task_completion)
+        self.listWidget_Planned.itemChanged.connect(self.handle_task_completion)
+        self.listWidget_Task.itemChanged.connect(self.handle_task_completion)
+        self.listWidget_Groceries.itemChanged.connect(self.handle_task_completion)
+
+
+
+        self.btn_delete_all_Myday.clicked.connect(self.delete_all_completed_tasks)
+        self.btn_delete_all_Important.clicked.connect(self.delete_all_completed_tasks)
+        self.btn_delete_all_Planned.clicked.connect(self.delete_all_completed_tasks)
+        self.btn_delete_all_Task.clicked.connect(self.delete_all_completed_tasks)
+        self.btn_delete_all_Groceries.clicked.connect(self.delete_all_completed_tasks)
+
+
+
+        # Kết nối nút bấm với các trang trong QStackedWidget
+        self.btn_myday.clicked.connect(lambda: self.switch_page(0))
+        self.btn_important.clicked.connect(lambda: self.switch_page(1))
+        self.btn_planned.clicked.connect(lambda: self.switch_page(2))
+        self.btn_task.clicked.connect(lambda: self.switch_page(3))
+        self.btn_groceries.clicked.connect(lambda: self.switch_page(4))
+
+
+
+        self.listWidget_completed_Myday.setVisible(False)
+        self.btn_delete_all_Myday.setVisible(False)
+
+        self.listWidget_completed_Important.setVisible(False)
+        self.btn_delete_all_Important.setVisible(False)
+
+        self.listWidget_completed_Planned.setVisible(False)
+        self.btn_delete_all_Planned.setVisible(False)
+
+        self.listWidget_completed_Task.setVisible(False)
+        self.btn_delete_all_Task.setVisible(False)
+
+        self.listWidget_completed_Groceries.setVisible(False)
+        self.btn_delete_all_Groceries.setVisible(False)
+
+    def switch_page(self, index):
+            """Chuyển đổi trang trong QStackedWidget theo index"""
+            self.stackedWidget.setCurrentIndex(index)
+
+    def get_current_page(self):
+        """Trả về tên của trang hiện tại trong QStackedWidget"""
+        return self.stackedWidget.currentWidget().objectName()
+
+    def set_user(self, username):
+            """Cập nhật thông tin user sau khi đăng nhập"""
+            self.username = username
+
+            # Tải dữ liệu và task của user
+            self.load_data()
+            self.load_tasks()
+
     # Thêm task mới
     def add_task(self):
-        task_text = self.lineEdit_newTask.text().strip()
+        task_text = self.qline_add_task.text().strip()
         if task_text:
-            new_task = {
-                "text": task_text,
-                "important": False,
-                "day": "",
-                "completed": False
-            }
-            self.tasks.append(new_task)
-            self.save_data()
-            
+            if main_window.get_current_page() == "Myday":
+                new_task = {
+                    "text": task_text,
+                    "important": False,
+                    "day": QDate.currentDate().toString("yyyy-MM-dd"),
+                    "is_planned": False,
+                    "completed": False
+                }
+                self.tasks.append(new_task)
+                self.save_data()
+            elif main_window.get_current_page() == "Important":
+                new_task = {
+                    "text": task_text,
+                    "important": True,
+                    "day": "",
+                    "is_planned": False,
+                    "completed": False
+                }
+                self.tasks.append(new_task)
+                self.save_data()
+            elif main_window.get_current_page() == "Planned":
+                new_task = {
+                    "text": task_text,
+                    "important": False,
+                    "day": QDate.currentDate().toString("yyyy-MM-dd"),
+                    "is_planned": True,
+                    "completed": False
+                }
+                self.tasks.append(new_task)
+                self.save_data()
+            elif main_window.get_current_page() == "Task":
+                new_task = {
+                    "text": task_text,
+                    "important": False,
+                    "day": "",
+                    "is_planned": False,
+                    "completed": False
+                }
+                self.tasks.append(new_task)
+                self.save_data()
+            else:
+                pass
+
             item = QListWidgetItem(task_text)
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             item.setCheckState(Qt.CheckState.Unchecked)
-            self.listWidget_tasks.addItem(item)
-            self.lineEdit_newTask.clear()
+
+            if main_window.get_current_page() == "Myday":
+                self.listWidget_Myday.addItem(item)
+            elif main_window.get_current_page() == "Important":
+                self.listWidget_Important.addItem(item)
+            elif main_window.get_current_page() == "Planned":
+                self.listWidget_Planned.addItem(item)
+            elif main_window.get_current_page() == "Task":
+                self.listWidget_Task.addItem(item)
+            else:
+                pass
+
+            self.qline_add_task.clear()
 
     # Xử lý task hoàn thành
     def handle_task_completion(self, item):
@@ -91,6 +188,7 @@ class MainWindow(QMainWindow):
     def toggle_completed(self):
         is_visible = self.listWidget_completed.isVisible()
         self.listWidget_completed.setVisible(not is_visible)
+        self.btn_delete_all.setVisible(not is_visible)
         self.btn_toggle_completed.setArrowType(
             Qt.ArrowType.DownArrow if is_visible else Qt.ArrowType.RightArrow
         )
@@ -124,22 +222,38 @@ class MainWindow(QMainWindow):
                 task["day"] = date.toString("yyyy-MM-dd")
         self.save_data()
 
-    # Tải và lưu dữ liệu JSON
-    def load_data(self):
-        file_path = Path("TESTDATA.json")
-        if not file_path.exists():
-            with open("TESTDATA.json", "w") as f:
-                json.dump({"users": []}, f, indent=4)
+    def delete_all_completed_tasks(self):
+        # Xóa các task đã hoàn thành khỏi danh sách tasks
+        self.tasks = [task for task in self.tasks if not task["completed"]]
+
+        self.listWidget_completed.clear()
         
-        with open("TESTDATA.json", "r") as f:
+        self.save_data()
+
+    def load_data(self):
+        with open("MULTI_USER_DATA.json", "r") as f:
             data = json.load(f)
+            # Tìm user
             for user in data["users"]:
                 if user["username"] == self.username:
                     self.tasks = user.get("tasks", [])
                     break
+            else:
+                # Nếu user không tồn tại, tạo mới
+                self.tasks = []
+                new_user = {
+                    "username": self.username,
+                    "email": "lyahien18072011@gmail.com",
+                    "password": "Huhu18072011@",
+                    "tasks": []
+                }
+                data["users"].append(new_user)
+                with open("MULTI_USER_DATA.json", "r+") as f:
+                    json.dump(data, f, indent=4)
+                    f.truncate()
 
     def save_data(self):
-        with open("TESTDATA.json", "r+") as f:
+        with open("MULTI_USER_DATA.json", "r+") as f:
             data = json.load(f)
             for user in data["users"]:
                 if user["username"] == self.username:
@@ -156,37 +270,36 @@ class MainWindow(QMainWindow):
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             
             if task["completed"]:
+                print(task["text"], "completed")
                 item.setCheckState(Qt.CheckState.Checked)
-                self.listWidget_completed.addItem(item.text())
+                self.listWidget_completed_Task.addItem(item)
+                if task["important"]:
+                    self.listWidget_completed_Important.addItem(item)
+                if task["is_planned"]:
+                    self.listWidget_completed_Planned.addItem(item)
+                if task["day"] == QDate.currentDate().toString("yyyy-MM-dd"):
+                    self.listWidget_completed_Myday.addItem(item)
             else:
+                print(task["text"], "not completed")
                 item.setCheckState(Qt.CheckState.Unchecked)
-                self.listWidget_tasks.addItem(item)
-            
-            if task["important"]:
-                item.setForeground(QColor("red"))
+                self.listWidget_Task.addItem(item)
+                if task["important"]:
+                    item.setForeground(QColor("red"))
+                    self.listWidget_Important.addItem(item)
+                    print("Da them vao Important")
+                if task["is_planned"]:
+                    self.listWidget_Planned.addItem(item)
+                if task["day"] == QDate.currentDate().toString("yyyy-MM-dd"):
+                    self.listWidget_Myday.addItem(item)
 
-# Chạy ứng dụng
+
+# 4. Hàm khởi chạy ứng dụng
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    
-    # CSS để làm đẹp UI
-    app.setStyleSheet("""
-        QListWidget {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 5px;
-        }
-        QGroupBox {
-            border: 1px solid #ccc;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        QToolButton {
-            border: none;
-            padding: 5px;
-        }
-    """)
-    
-    main_window = MainWindow(username="user1")
+
+    # Tạo các cửa sổ
+    main_window = MainWindow()
+    main_window.set_user("ahiendz")
+
     main_window.show()
     sys.exit(app.exec())
