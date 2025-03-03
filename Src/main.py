@@ -6,7 +6,6 @@ from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QColor
 import sys
 import json
-import uuid
 
 # 1. Lớp Signin (Đăng nhập)
 class SignInWindow(QMainWindow):
@@ -75,7 +74,6 @@ class SignInWindow(QMainWindow):
         self.message_box.setIcon(icon)
         self.message_box.exec()
 
-# 2. Lớp Signup (Đăng ký)
 class SignUpWindow(QMainWindow):
     def __init__(self, signin_window):
         super().__init__()
@@ -85,13 +83,10 @@ class SignUpWindow(QMainWindow):
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
-        # Khởi tạo cửa sổ đăng nhập
         self.signin_window = signin_window
 
-        # Hộp thoại thông báo
         self.message_box = QMessageBox()
 
-        # Gắn sự kiện cho các nút bấm
         self.sign_up_button.clicked.connect(self.process_signup)
         self.switch_to_signin_button.clicked.connect(self.open_signin_window)
         self.closebtt.clicked.connect(self.close)
@@ -173,7 +168,6 @@ class TaskDialog(QDialog):
         
         self.setLayout(layout)
 
-# Lớp MainWindow (sử dụng đúng tên object từ UI)
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -181,18 +175,12 @@ class MainWindow(QMainWindow):
         self.email = None
         self.tasks = []
 
-        # Load UI và kết nối object theo tên
-        try:
-            uic.loadUi(r"GUi\Tesst.ui", self)  # Đảm bảo file UI có đúng tên object
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to load UI: {e}")
-            sys.exit()
+        uic.loadUi(r"GUi\Tesst.ui", self)
 
-        # Kết nối sự kiện với đúng tên object
-        self.lineEdit_newTask.returnPressed.connect(self.add_task)  # QLineEdit
-        self.btn_toggle_completed.clicked.connect(self.toggle_completed)  # QToolButton
-        self.listWidget_tasks.itemDoubleClicked.connect(self.open_task_dialog)  # QListWidget
-        self.listWidget_tasks.itemChanged.connect(self.handle_task_completion)  # Xử lý checkbox
+        self.lineEdit_newTask.returnPressed.connect(self.add_task)
+        self.btn_toggle_completed.clicked.connect(self.toggle_completed)
+        self.listWidget_tasks.itemDoubleClicked.connect(self.open_task_dialog)
+        self.listWidget_tasks.itemChanged.connect(self.handle_task_completion)
         self.btn_delete_all.clicked.connect(self.delete_all_completed_tasks)
 
         self.listWidget_completed.setVisible(False)
@@ -279,26 +267,17 @@ class MainWindow(QMainWindow):
         # Xóa các task đã hoàn thành khỏi danh sách tasks
         self.tasks = [task for task in self.tasks if not task["completed"]]
 
-        # Xóa tất cả item trong listWidget_completed
         self.listWidget_completed.clear()
         
-        # Cập nhật lại dữ liệu và giao diện
         self.save_data()
 
-    # ======== CẢI TIẾN PHƯƠNG THỨC XỬ LÝ USER ========
     def load_data(self):
-        # Đọc dữ liệu
         with open("MULTI_USER_DATA.json", "r") as f:
             data = json.load(f)            
-            print("Data loaded:", data)  # Kiểm tra dữ liệu
             # Tìm user
-            
-            print("Current user:", self.username)
             for user in data["users"]:
                 if user["username"] == self.username:
-                    print("Current user data:", user)  # Xem user có tồn tại không
                     self.tasks = user.get("tasks", [])
-                    print("Tasks loaded:", self.tasks)  # Kiểm tra xem có load được không
                     break
                 else:
                     print("User not found")
@@ -339,9 +318,7 @@ if __name__ == "__main__":
     signin_window = SignInWindow(None, main_window)
     signup_window = SignUpWindow(signin_window)
 
-    # Gán cửa sổ đăng ký vào cửa sổ đăng nhập
     signin_window.signup_window = signup_window
 
-    # Hiển thị cửa sổ đăng nhập
     signin_window.show()
     sys.exit(app.exec())
