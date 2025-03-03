@@ -44,20 +44,17 @@ class MainWindow(QMainWindow):
         self.btn_toggle_completed_Important.clicked.connect(self.toggle_completed)
         self.btn_toggle_completed_Planned.clicked.connect(self.toggle_completed)
         self.btn_toggle_completed_Task.clicked.connect(self.toggle_completed)
-        self.btn_toggle_completed_Groceries.clicked.connect(self.toggle_completed)
 
 
         self.listWidget_Myday.itemDoubleClicked.connect(self.open_task_dialog)
         self.listWidget_Important.itemDoubleClicked.connect(self.open_task_dialog)
         self.listWidget_Planned.itemDoubleClicked.connect(self.open_task_dialog)
         self.listWidget_Task.itemDoubleClicked.connect(self.open_task_dialog)
-        self.listWidget_Groceries.itemDoubleClicked.connect(self.open_task_dialog)
 
         self.listWidget_Myday.itemChanged.connect(self.handle_task_completion)
         self.listWidget_Important.itemChanged.connect(self.handle_task_completion)
         self.listWidget_Planned.itemChanged.connect(self.handle_task_completion)
         self.listWidget_Task.itemChanged.connect(self.handle_task_completion)
-        self.listWidget_Groceries.itemChanged.connect(self.handle_task_completion)
 
 
 
@@ -65,7 +62,6 @@ class MainWindow(QMainWindow):
         self.btn_delete_all_Important.clicked.connect(self.delete_all_completed_tasks)
         self.btn_delete_all_Planned.clicked.connect(self.delete_all_completed_tasks)
         self.btn_delete_all_Task.clicked.connect(self.delete_all_completed_tasks)
-        self.btn_delete_all_Groceries.clicked.connect(self.delete_all_completed_tasks)
 
 
 
@@ -74,7 +70,6 @@ class MainWindow(QMainWindow):
         self.btn_important.clicked.connect(lambda: self.switch_page(1))
         self.btn_planned.clicked.connect(lambda: self.switch_page(2))
         self.btn_task.clicked.connect(lambda: self.switch_page(3))
-        self.btn_groceries.clicked.connect(lambda: self.switch_page(4))
 
 
 
@@ -89,9 +84,6 @@ class MainWindow(QMainWindow):
 
         self.listWidget_completed_Task.setVisible(False)
         self.btn_delete_all_Task.setVisible(False)
-
-        self.listWidget_completed_Groceries.setVisible(False)
-        self.btn_delete_all_Groceries.setVisible(False)
 
     def switch_page(self, index):
             """Chuyển đổi trang trong QStackedWidget theo index"""
