@@ -187,11 +187,39 @@ class MainWindow(QMainWindow):
 
     # Thu gọn/mở rộng Completed
     def toggle_completed(self):
-        
-        is_visible = self.listWidget_completed.isVisible()
-        self.listWidget_completed.setVisible(not is_visible)
-        self.btn_delete_all.setVisible(not is_visible)
-        self.btn_toggle_completed.setArrowType(
+        # Lấy trang hiện tại trong QStackedWidget
+        current_page = self.get_current_page()
+
+        # Xác định các widget tương ứng với trang hiện tại
+        if current_page == "Myday":
+            list_widget_completed = self.listWidget_completed_Myday
+            btn_delete_all = self.btn_delete_all_Myday
+            btn_toggle_completed = self.btn_toggle_completed_Myday
+        elif current_page == "Important":
+            list_widget_completed = self.listWidget_completed_Important
+            btn_delete_all = self.btn_delete_all_Important
+            btn_toggle_completed = self.btn_toggle_completed_Important
+        elif current_page == "Planned":
+            list_widget_completed = self.listWidget_completed_Planned
+            btn_delete_all = self.btn_delete_all_Planned
+            btn_toggle_completed = self.btn_toggle_completed_Planned
+        elif current_page == "Task":
+            list_widget_completed = self.listWidget_completed_Task
+            btn_delete_all = self.btn_delete_all_Task
+            btn_toggle_completed = self.btn_toggle_completed_Task
+        elif current_page == "Groceries":
+            list_widget_completed = self.listWidget_completed_Groceries
+            btn_delete_all = self.btn_delete_all_Groceries
+            btn_toggle_completed = self.btn_toggle_completed_Groceries
+
+
+        # Đảo ngược trạng thái hiển thị của list_widget_completed và btn_delete_all
+        is_visible = list_widget_completed.isVisible()
+        list_widget_completed.setVisible(not is_visible)
+        btn_delete_all.setVisible(not is_visible)
+
+        # Thay đổi biểu tượng mũi tên trên btn_toggle_completed
+        btn_toggle_completed.setArrowType(
             Qt.ArrowType.DownArrow if is_visible else Qt.ArrowType.RightArrow
         )
 
@@ -225,12 +253,19 @@ class MainWindow(QMainWindow):
         self.save_data()
 
     def delete_all_completed_tasks(self):
-        # Xóa các task đã hoàn thành khỏi danh sách tasks
+        # Lọc ra các task chưa hoàn thành (completed = False)
         self.tasks = [task for task in self.tasks if not task["completed"]]
 
-        self.listWidget_completed.clear()
-        
+        # Xóa tất cả các task đã hoàn thành khỏi các danh sách UI
+        self.listWidget_completed_Task.clear()
+        self.listWidget_completed_Myday.clear()
+        self.listWidget_completed_Important.clear()
+        self.listWidget_completed_Planned.clear()
+        self.listWidget_completed_Groceries.clear()
+
+        # Lưu dữ liệu mới vào file JSON
         self.save_data()
+
 
     def load_data(self):
         with open("MULTI_USER_DATA.json", "r") as f:
