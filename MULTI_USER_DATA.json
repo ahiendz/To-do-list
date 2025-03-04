@@ -1,0 +1,51 @@
+{
+    "users": [
+        {
+            "username": "@Admin!1",
+            "email": "admin@gmail.com",
+            "password": "Huhu18072011@",
+            "tasks": [
+                {
+                    "text": "g\u00ec",
+                    "important": false,
+                    "day": "2025-03-05",
+                    "is_planned": false,
+                    "completed": false
+                },
+                {
+                    "text": "DO HOUSEWORK",
+                    "important": true,
+                    "day": "2025-03-05",
+                    "is_planned": false,
+                    "completed": false
+                }
+            ]
+        },
+        {
+            "username": "AHien2D@",
+            "email": "admin1@gmail.com",
+            "password": "Huhu18072011@",
+            "tasks": []
+        },
+        {
+            "username": "ahiendz",
+            "email": "lyahien18072011@gmail.com",
+            "password": "Huhu18072011@",
+            "tasks": [
+                {
+                    "text": "OKE",
+                    "important": true,
+                    "day": "",
+                    "is_planned": false,
+                    "completed": true
+                }
+            ]
+        },
+        {
+            "username": "Ahi3@",
+            "email": "lyanhhien18072011@gmail.com",
+            "password": "Huhu18072011@!",
+            "tasks": []
+        }
+    ]
+}

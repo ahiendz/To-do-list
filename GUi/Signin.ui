@@ -40,7 +40,7 @@ border-radius: 29px</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../../../../../../Downloads/Tên_ứng_dụng__Plansync_Mô_tả_logo__Một_logo_hình_tròn_tối_giản__chuyên_nghiệp__với_chữ__T__nổi_bật_ở_trung_tâm__được_thiết_kế_như_kim_đồng_hồ_để_tượng_trưng_cho_thời_gian._Phong_cách_hiện_đại_và_sạch_.png</pixmap>
+      <pixmap>../Assets/Images/Logo.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -260,7 +260,7 @@ font: 12pt &quot;MS Shell Dlg 2&quot;;</string>
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../../../Downloads/close.png</normaloff>../../../../../../Downloads/close.png</iconset>
+       <normaloff>../Assets/Icons/close.png</normaloff>../Assets/Icons/close.png</iconset>
      </property>
     </widget>
    </widget>
